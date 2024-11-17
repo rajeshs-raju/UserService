@@ -8,19 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/userservice")
 public class UserController {
     @Autowired
     private UserService userService;
-
-//    @PostMapping("/register")
-//    public User registerUser(@RequestBody User user) {
-//        System.out.println("Received user data: " + user.getEmail() + " " +  user.getUsername() + " " + user.getId() + " " + user.getPassword()) ;
-//        return userService.registerUser(user);
-//    }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
@@ -42,8 +37,20 @@ public class UserController {
     }
 
 
+    // API to get a user by ID
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.findUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = userService.findUserById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();  // Return 404 if user not found
+        }
+        return ResponseEntity.ok(user);  // Return 200 with user data
+    }
+
+    // API to get the list of all users
+    @GetMapping("/getUsers")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getListOfUsers();
+        return ResponseEntity.ok(users);  // Return list of users
     }
 }
