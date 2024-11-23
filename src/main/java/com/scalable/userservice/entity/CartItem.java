@@ -1,54 +1,38 @@
 package com.scalable.userservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-
-@Entity
 public class CartItem {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generate IDs
-    private Long id;
-
-    private String itemName;
-    private int quantity;
-
-    @ManyToOne
-    private User user;
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
+	
+	private String productName;
+	private Integer quantity;
+	
+	// No-argument constructor
+    public CartItem() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
+    // Constructor with all fields
+    public CartItem(String productName, Integer quantity) {
+        this.productName = productName;
         this.quantity = quantity;
     }
 
-    public User getUser() {
-        return user;
+    // Getter for productName
+    public String getProductName() {
+        return productName;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    // Setter for productName
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
+
+    // Getter for quantity
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    // Setter for quantity
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
 }

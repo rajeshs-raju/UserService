@@ -1,51 +1,37 @@
 package com.scalable.userservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+
+
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Entity
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="User")
 public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private String username;
     private String password;
     private String email;
     private String phoneNumber;
-    private int loginAttempts;
-    private boolean isAccountLocked;
-    private String roles;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime lastLogin;
+    
+    
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Order> orders;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Address> addresses;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Refund> refunds;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<WishlistItem> wishlistItems;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<CartItem> cartItems;
-
-    @OneToMany(mappedBy = "user") // Ensure 'user' exists in Notification
-    private List<Notification> notifications;
-
-    // Getters and Setters
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public User() {
+	}
+    
+	public User(String username, String password, String email, String phoneNumber, LocalDateTime createdAt,
+			LocalDateTime updatedAt) {
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -58,40 +44,19 @@ public class User {
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
 
-    public int getLoginAttempts() { return loginAttempts; }
-    public void setLoginAttempts(int loginAttempts) { this.loginAttempts = loginAttempts; }
-
-    public boolean isAccountLocked() { return isAccountLocked; }
-    public void setAccountLocked(boolean accountLocked) { isAccountLocked = accountLocked; }
-
-    public String getRoles() { return roles; }
-    public void setRoles(String roles) { this.roles = roles; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    public LocalDateTime getLastLogin() { return lastLogin; }
-    public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
-
-    public List<Order> getOrders() { return orders; }
-    public void setOrders(List<Order> orders) { this.orders = orders; }
-
-    public List<Address> getAddresses() { return addresses; }
-    public void setAddresses(List<Address> addresses) { this.addresses = addresses; }
-
-    public List<Refund> getRefunds() { return refunds; }
-    public void setRefunds(List<Refund> refunds) { this.refunds = refunds; }
-
-    public List<WishlistItem> getWishlistItems() { return wishlistItems; }
-    public void setWishlistItems(List<WishlistItem> wishlistItems) { this.wishlistItems = wishlistItems; }
-
-    public List<CartItem> getCartItems() { return cartItems; }
-    public void setCartItems(List<CartItem> cartItems) { this.cartItems = cartItems; }
-
-    public List<Notification> getNotifications() { return notifications; }
-    public void setNotifications(List<Notification> notifications) { this.notifications = notifications; }
+    
 }

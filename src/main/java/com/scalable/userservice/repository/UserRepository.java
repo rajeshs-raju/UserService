@@ -1,12 +1,13 @@
 package com.scalable.userservice.repository;
 
 import com.scalable.userservice.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    List<User> findAll();
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-    User findByUsername(String username);
+
+public interface UserRepository extends MongoRepository<User, String> {
+	Optional<User> findByUsername(String username);
+	
 }

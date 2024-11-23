@@ -1,92 +1,96 @@
 package com.scalable.userservice.controller;
 
+import com.scalable.userservice.entity.Cart;
+import com.scalable.userservice.entity.Order;
+import com.scalable.userservice.entity.Product;
 import com.scalable.userservice.entity.User;
 import com.scalable.userservice.service.UserService;
 import com.scalable.userservice.utils.JwtUtil;
-import io.jsonwebtoken.Claims;
+
+import org.json.HTTP;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/userservice")
 public class UserController {
+	
     @Autowired
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
-        // Debug log in server console to verify data received
-        System.out.println("Received user data: " + user.getEmail() + " " + user.getUsername() + " " + user.getId() + " " + user.getPassword());
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
 
-        // Call the service to save the user
         User createdUser = userService.registerUser(user);
 
-        // Generate JWT token for the user
-        String token = JwtUtil.generateToken(createdUser.getUsername());
-
-        // Prepare the response
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "User created successfully");
-        response.put("userId", createdUser.getId());
-        response.put("username", createdUser.getUsername());
-        response.put("email", createdUser.getEmail());
-        response.put("token", token); // Include the token
-
-        // Return response with status 201 Created
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<User> loginUser(@RequestBody Map<String, String> credentials) {
         String username = credentials.get("username");
         String password = credentials.get("password");
 
         // Authenticate the user
         User user = userService.authenticateUser(username, password);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid username or password"));
+            return new ResponseEntity<>(user,HttpStatus.UNAUTHORIZED);
         }
 
-        // Generate JWT token for the user
-        String token = JwtUtil.generateToken(user.getUsername());
-
-        // Prepare the response with token
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Login successful");
-        response.put("token", token);
-
-        return ResponseEntity.ok(response);  // Return 200 with token
+        return new ResponseEntity<>(user,HttpStatus.OK); 
     }
-
-
-    @GetMapping("/getUser/{id}")
-    public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token ,@PathVariable Long id) {
-        String jwt = token.replace("Bearer ", "");
-        Claims claims = JwtUtil.validateToken(jwt);
-        String username = claims.getSubject();
-        System.out.println("Request made by user: " + username);
-        User user = userService.findUserById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();  // Return 404 if user not found
-        }
-        return ResponseEntity.ok(user);  // Return 200 with user data
+    
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts() {
+    	
+    	return new ResponseEntity<>(userService.getProducts(),HttpStatus.OK);
+        
     }
-
-    @GetMapping("/getUsers")
-    public ResponseEntity<List<User>> getAllUsers(@RequestHeader("Authorization") String token) {
-        String jwt = token.replace("Bearer ", "");
-        Claims claims = JwtUtil.validateToken(jwt);
-        String username = claims.getSubject();
-        System.out.println("Request made by user: " + username);
-        List<User> users = userService.getListOfUsers();
-        return ResponseEntity.ok(users);
+    
+    @PostMapping("/cart/{userName}/{productName}")
+    public ResponseEntity<String> addCart(@PathVariable String productName,@PathVariable String userName) {
+    	String message = "";
+    	if(userService.addToCart(productName,userName)) {
+    		message= "Added to cart";
+    	}else {
+    		message= "Cart not added";
+    	}
+    	return new ResponseEntity<>(message,HttpStatus.OK);
+        
     }
+    
+    
+    @GetMapping("/cart/{userName}")
+    public ResponseEntity<Cart> getCart(@PathVariable String userName) {
+    	Cart cart =	userService.getCart(userName);
+    	if(cart==null) {
+    		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    	}
+    	return new ResponseEntity<>(cart,HttpStatus.OK);
+    }
+    
+    @PostMapping("/cart/checkout/{userName}")
+    public ResponseEntity<Order> checkout(@PathVariable String userName) {
+    	
+    	return new ResponseEntity<>(userService.addOrder(userName),HttpStatus.OK);
+        
 
+    }
+    
+    @GetMapping("/order/{userName}")
+    public ResponseEntity<Order> getOrder(@PathVariable String userName) {
+    	
+    	return new ResponseEntity<>(userService.getOrder(userName),HttpStatus.OK);
+        
+
+    }
+    
 }
+    
+    
